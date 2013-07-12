@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name            = 'UIImageView+EGOCacheLoader'
+  s.name            = 'UIImageView-EGOCacheLoader'
   s.author          = { "Dmitry Ponomarev" => "demdxx@gmail.com" }
   s.version         = '0.0.0'
   s.license         = 'MIT'
