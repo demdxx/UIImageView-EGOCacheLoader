@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.homepage        = 'https://github.com/demdxx/UIImageView+EGOCacheLoader'
   s.source          = {:git => 'https://github.com/demdxx/UIImageView+EGOCacheLoader.git', :tag => 'v0.0.0'}
 
-  s.platform        = :ios, '4.0'
+  s.platform        = :ios
   
   s.source_files    = '*.{h,m}'
   s.requires_arc    = false
