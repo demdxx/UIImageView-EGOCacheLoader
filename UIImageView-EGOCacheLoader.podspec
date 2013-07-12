@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   
   s.ios.frameworks  = 'Foundation', 'UIKit'
   
-  s.dependency 'NSHelpers', :git => 'https://github.com/demdxx/NSHelpers'
+  # s.dependency 'NSHelpers', '>= 0.0.2'
   s.dependency 'EGOCache', '~> 2.0'
   s.dependency 'AFNetworking', '~> 1.3.0'
 end
