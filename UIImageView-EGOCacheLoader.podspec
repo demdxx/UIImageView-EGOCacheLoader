@@ -4,8 +4,8 @@ Pod::Spec.new do |s|
   s.version         = '0.0.0'
   s.license         = 'MIT'
   s.summary         = 'UIImageView cache using EGOCache and AFNetworking'
-  s.homepage        = 'https://github.com/demdxx/UIImageView+EGOCacheLoader'
-  s.source          = {:git => 'https://github.com/demdxx/UIImageView+EGOCacheLoader.git', :tag => 'v0.0.0'}
+  s.homepage        = 'https://github.com/demdxx/UIImageView-EGOCacheLoader'
+  s.source          = {:git => 'https://github.com/demdxx/UIImageView-EGOCacheLoader.git', :tag => 'v0.0.0'}
 
   s.platform        = :ios
   
