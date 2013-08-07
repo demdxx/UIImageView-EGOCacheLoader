@@ -33,6 +33,16 @@
 #import <EGOCache/EGOCache.h>
 #import <AFNetworking/UIImageView+AFNetworking.h>
 
+#ifndef __has_feature
+#define __has_feature(x) 0
+#endif
+
+#if __has_feature(objc_arc)
+#define EGOUIV_OBJECT_RETAIN(obj) obj
+#else
+#define EGOUIV_OBJECT_RETAIN(obj) [obj retain]
+#endif
+
 @implementation UIImageView (EGOCacheLoader)
 
 - (UIImageView *)setCacheImageWithURL:(NSURL *)url
@@ -87,7 +97,7 @@
     [self setImage:image];
     
     // Caclback
-    if (nil!=callback) {
+    if (nil != callback) {
       callback(image, nil);
     }
   } else {
@@ -98,13 +108,24 @@
     [self setImageWithURLRequest:request
                 placeholderImage:holdImage
                          success:^(NSURLRequest *rq, NSHTTPURLResponse *r, UIImage *img) {
-                           [cache setImage:img forKey:key];
-                           if (nil!=callback) {
+                           if(nil == img) {
+                             if ([self respondsToSelector:@selector(af_imageRequestOperation)]) {
+                               id resp = [self performSelector:@selector(af_imageRequestOperation)];
+                               if ([resp respondsToSelector:@selector(responseData)]) {
+                                 img = EGOUIV_OBJECT_RETAIN([UIImage imageWithData:[resp performSelector:@selector(responseData)]]);
+                               }
+                             }
+                           }
+                           if (nil != img) {
+                             [cache setImage:img forKey:key];
+                             [self setImage:img];
+                           }
+                           if (nil != callback) {
                              callback(img, nil);
                            }
                          }
                          failure:^(NSURLRequest *rq, NSHTTPURLResponse *r, NSError *e) {
-                           if (nil!=callback) {
+                           if (nil != callback) {
                              callback(nil, e);
                            }
                          }];
