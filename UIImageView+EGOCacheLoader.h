@@ -47,4 +47,11 @@
                                 cache:(id)cache
                              callback:(void(^)(UIImage *image, NSError* error))callback;
 
+- (UIImageView *)setCacheImageWithURL:(NSURL *)url
+                     placeholderImage:(UIImage *)holdImage
+                           errorImage:(UIImage *)errorImage
+                                cache:(id)cache
+                             callback:(void(^)(UIImage *image, NSError* error))callback
+                              decoder:(UIImage*(^)(NSData *data))decoder;
+
 @end

@@ -32,6 +32,7 @@
 #import <NSHelpers/NSString+MD5.h>
 #import <EGOCache/EGOCache.h>
 #import <AFNetworking/UIImageView+AFNetworking.h>
+#import <AFNetworking/AFHTTPRequestOperation.h>
 
 #ifndef __has_feature
 #define __has_feature(x) 0
@@ -39,8 +40,10 @@
 
 #if __has_feature(objc_arc)
 #define EGOUIV_OBJECT_RETAIN(obj) obj
+#define EGOUIV_OBJECT_AUTORELEASE(obj) obj
 #else
 #define EGOUIV_OBJECT_RETAIN(obj) [obj retain]
+#define EGOUIV_OBJECT_AUTORELEASE(obj) [obj autorelease]
 #endif
 
 @implementation UIImageView (EGOCacheLoader)
@@ -92,7 +95,7 @@
   // Get image from cache
   UIImage *image = [cache imageForKey:key];
   
-  if (nil!=image) {
+  if (nil != image) {
     // Set image from cache
     [self setImage:image];
     
@@ -119,6 +122,8 @@
                            if (nil != img) {
                              [cache setImage:img forKey:key];
                              [self setImage:img];
+                           } else if (nil != errorImage) {
+                             [self setImage:errorImage];
                            }
                            if (nil != callback) {
                              callback(img, nil);
@@ -130,6 +135,77 @@
                            }
                          }];
   }
+  return self;
+}
+
+- (UIImageView *)setCacheImageWithURL:(NSURL *)url
+                     placeholderImage:(UIImage *)holdImage
+                           errorImage:(UIImage *)errorImage
+                                cache:(id)cache
+                             callback:(void(^)(UIImage *image, NSError* error))callback
+                              decoder:(UIImage*(^)(NSData *data))decoder
+{
+  if (nil == decoder) {
+    return [self setCacheImageWithURL:url
+                     placeholderImage:holdImage
+                           errorImage:errorImage
+                                cache:cache
+                             callback:callback];
+  }
+  
+  if (nil==cache) {
+    cache = [EGOCache globalCache];
+  }
+  
+  // Image cache key
+  NSString *key = [url.absoluteString md5];
+  
+  // Get image from cache
+  NSData *data = [cache dataForKey:key];
+  
+  if (nil != data) {
+    UIImage *image = decoder (data);
+    
+    // Set image from cache
+    if (image != nil) {
+      [self setImage:image];
+    } else if (nil != errorImage) {
+      [self setImage:errorImage];
+    }
+    
+    // Caclback
+    if (nil != callback) {
+      callback(image, nil);
+    }
+  } else {
+    // Make request
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    AFHTTPRequestOperation *operation = EGOUIV_OBJECT_AUTORELEASE([[AFHTTPRequestOperation alloc] initWithRequest:request]);
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+      UIImage *image = decoder (operation.responseData);
+      
+      // Set image from cache
+      if (image != nil) {
+        [self setImage:image];
+        [cache setData:operation.responseData forKey:key];
+      } else if (nil != errorImage) {
+        [self setImage:errorImage];
+      }
+      
+      // Caclback
+      if (nil != callback) {
+        callback(image, nil);
+      }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+      if (nil != callback) {
+        callback(nil, error);
+      }
+    }];
+    
+    NSOperationQueue *queue = EGOUIV_OBJECT_AUTORELEASE([[NSOperationQueue alloc] init]);
+    [queue addOperation:operation];
+  }
+  
   return self;
 }
 
