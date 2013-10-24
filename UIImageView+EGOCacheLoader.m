@@ -115,7 +115,7 @@
                              if ([self respondsToSelector:@selector(af_imageRequestOperation)]) {
                                id resp = [self performSelector:@selector(af_imageRequestOperation)];
                                if ([resp respondsToSelector:@selector(responseData)]) {
-                                 img = EGOUIV_OBJECT_RETAIN([UIImage imageWithData:[resp performSelector:@selector(responseData)]]);
+                                 img = EGOUIV_OBJECT_AUTORELEASE(EGOUIV_OBJECT_RETAIN([UIImage imageWithData:[resp performSelector:@selector(responseData)]]));
                                }
                              }
                            }
