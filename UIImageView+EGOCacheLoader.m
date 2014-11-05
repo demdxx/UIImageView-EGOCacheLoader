@@ -29,7 +29,7 @@
 
 #import "UIImageView+EGOCacheLoader.h"
 
-#import <NSHelpers/NSString+MD5.h>
+#import <NSHelpers/NSString+Hashes.h>
 #import <EGOCache/EGOCache.h>
 #import <AFNetworking/UIImageView+AFNetworking.h>
 #import <AFNetworking/AFHTTPRequestOperation.h>
